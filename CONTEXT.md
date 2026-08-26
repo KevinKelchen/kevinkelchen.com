@@ -23,4 +23,4 @@ _Avoid_: Blog index, post list
 The single RSS/Atom feed, containing every Post.
 
 **About**:
-The dedicated page describing Kevin's background and work. Contact is via LinkedIn and X links only — no email address appears anywhere on the site.
+The dedicated page describing Kevin's background and work. Contact is via LinkedIn and X links only — no email address appears anywhere on the site. Location is never stated.

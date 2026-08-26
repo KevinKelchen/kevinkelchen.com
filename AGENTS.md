@@ -1,6 +1,6 @@
 ## Domain model
 
-Read `CONTEXT.md` for this site's vocabulary (Post, Tag, Homepage, Archive, Feed, About) and `docs/adr/` for recorded decisions. Two rules that aren't visible in the code: the professional bar is editorial, so Posts never carry a professional/personal classification; and no email address ever appears on the site — contact is via LinkedIn and X links only.
+Read `CONTEXT.md` for this site's vocabulary (Post, Tag, Homepage, Archive, Feed, About) and `docs/adr/` for recorded decisions. Rules that aren't visible in the code: the professional bar is editorial, so Posts never carry a professional/personal classification; contact is via LinkedIn and X links only — no email address; and the site never states Kevin's location, even if LinkedIn or X do.
 
 ## Development
 
