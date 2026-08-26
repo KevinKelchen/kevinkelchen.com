@@ -35,23 +35,23 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     />
   </head>
   <body class="mx-auto flex min-h-screen max-w-2xl flex-col px-6 text-gray-900 antialiased">
-    <header class="flex items-baseline justify-between py-8">
-      <a href="/" class="font-semibold tracking-tight hover:underline">{SITE_TITLE}</a>
+    <header class="flex items-center justify-between py-6">
+      <a href="/" class="inline-flex min-h-11 items-center font-semibold tracking-tight hover:underline">{SITE_TITLE}</a>
       <nav class="flex gap-5 text-sm text-gray-600">
-        <a href="/blog" class="hover:text-gray-900 hover:underline">Blog</a>
-        <a href="/about" class="hover:text-gray-900 hover:underline">About</a>
+        <a href="/blog" class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">Blog</a>
+        <a href="/about" class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">About</a>
       </nav>
     </header>
     <main class="flex-1 pb-16">
       <slot />
     </main>
-    <footer class="flex items-center justify-between border-t border-gray-200 py-8 text-sm text-gray-600">
+    <footer class="flex flex-col items-start gap-4 border-t border-gray-200 py-8 text-sm text-gray-600 sm:flex-row sm:items-center sm:justify-between">
       <p>© {new Date().getFullYear()} Kevin Kelchen</p>
       <nav class="flex gap-5">
-        <a href={SOCIALS.github} class="hover:text-gray-900 hover:underline">GitHub</a>
-        <a href={SOCIALS.linkedin} class="hover:text-gray-900 hover:underline">LinkedIn</a>
-        <a href={SOCIALS.x} class="hover:text-gray-900 hover:underline">X</a>
-        <a href="/rss.xml" class="hover:text-gray-900 hover:underline">RSS</a>
+        <a href={SOCIALS.github} class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">GitHub</a>
+        <a href={SOCIALS.linkedin} class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">LinkedIn</a>
+        <a href={SOCIALS.x} class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">X</a>
+        <a href="/rss.xml" class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">RSS</a>
       </nav>
     </footer>
   </body>

@@ -12,6 +12,10 @@ astro dev --background
 
 Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
 
+## Responsive design
+
+Support viewports down to 320 CSS pixels. For layout changes, run the responsive browser tests and visually verify the Homepage, Archive, About, and a representative Post at 320, 375, 768, and 1280 pixels. Completion requires no horizontal overflow and usable navigation, footer, content, and touch targets at every width.
+
 ## Documentation
 
 Full documentation: https://docs.astro.build
