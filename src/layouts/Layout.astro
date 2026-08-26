@@ -1,0 +1,58 @@
+---
+import '../styles/global.css';
+import { SITE_TITLE, SITE_DESCRIPTION, SOCIALS } from '../consts';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = SITE_DESCRIPTION } = Astro.props;
+const pageTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:type" content="website" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={SITE_TITLE}
+      href={new URL('rss.xml', Astro.site)}
+    />
+  </head>
+  <body class="mx-auto flex min-h-screen max-w-2xl flex-col px-6 text-gray-900 antialiased">
+    <header class="flex items-baseline justify-between py-8">
+      <a href="/" class="font-semibold tracking-tight hover:underline">{SITE_TITLE}</a>
+      <nav class="flex gap-5 text-sm text-gray-600">
+        <a href="/blog" class="hover:text-gray-900 hover:underline">Blog</a>
+        <a href="/about" class="hover:text-gray-900 hover:underline">About</a>
+      </nav>
+    </header>
+    <main class="flex-1 pb-16">
+      <slot />
+    </main>
+    <footer class="flex items-center justify-between border-t border-gray-200 py-8 text-sm text-gray-600">
+      <p>© {new Date().getFullYear()} Kevin Kelchen</p>
+      <nav class="flex gap-5">
+        <a href={SOCIALS.github} class="hover:text-gray-900 hover:underline">GitHub</a>
+        <a href={SOCIALS.linkedin} class="hover:text-gray-900 hover:underline">LinkedIn</a>
+        <a href={SOCIALS.x} class="hover:text-gray-900 hover:underline">X</a>
+        <a href="/rss.xml" class="hover:text-gray-900 hover:underline">RSS</a>
+      </nav>
+    </footer>
+  </body>
+</html>

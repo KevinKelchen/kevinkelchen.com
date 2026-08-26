@@ -1,0 +1,20 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SOCIALS } from '../consts';
+---
+
+<Layout title="About" description="About Kevin Kelchen, software engineer.">
+  <h1 class="mb-8 text-2xl font-bold tracking-tight">About</h1>
+  <div class="prose prose-gray max-w-none">
+    <!-- TODO(kevin): write your real about page -->
+    <p>
+      I'm Kevin Kelchen, a software engineer. I work across the stack with a
+      particular love for the frontend.
+    </p>
+    <p>
+      The best way to reach me is on
+      <a href={SOCIALS.linkedin}>LinkedIn</a> or <a href={SOCIALS.x}>X</a>. My code lives on
+      <a href={SOCIALS.github}>GitHub</a>.
+    </p>
+  </div>
+</Layout>

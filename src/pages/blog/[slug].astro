@@ -1,0 +1,37 @@
+---
+import { render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { getPosts, formatDate } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<Layout title={post.data.title} description={post.data.description}>
+  <article>
+    <header class="mb-8">
+      <h1 class="text-2xl font-bold tracking-tight">{post.data.title}</h1>
+      <p class="mt-2 text-sm text-gray-600">
+        <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+        {
+          post.data.updated && (
+            <>
+              {' · Updated '}
+              <time datetime={post.data.updated.toISOString()}>
+                {formatDate(post.data.updated)}
+              </time>
+            </>
+          )
+        }
+      </p>
+    </header>
+    <div class="prose prose-gray max-w-none">
+      <Content />
+    </div>
+  </article>
+</Layout>

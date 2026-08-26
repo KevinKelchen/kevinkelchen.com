@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PostList from '../../components/PostList.astro';
+import { getPosts } from '../../lib/posts';
+
+const posts = await getPosts();
+---
+
+<Layout title="Blog" description="All posts by Kevin Kelchen.">
+  <h1 class="mb-8 text-2xl font-bold tracking-tight">Blog</h1>
+  <PostList posts={posts} />
+</Layout>
