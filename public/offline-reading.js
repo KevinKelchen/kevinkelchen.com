@@ -98,6 +98,24 @@
     return Array.from(urls);
   };
 
+  const cacheCurrentPage = (worker) => {
+    if (!worker) {
+      return;
+    }
+
+    worker.postMessage({
+      type: CACHE_MESSAGE_TYPE,
+      urls: collectCurrentPageUrls(),
+    });
+  };
+
+  // An updated worker can replace the controller after this page has loaded.
+  // Re-send the current resources because activation removes the prior
+  // worker's cache.
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    cacheCurrentPage(navigator.serviceWorker.controller);
+  });
+
   const registerOfflineReading = async () => {
     try {
       const registration = await navigator.serviceWorker.register(SERVICE_WORKER_URL, {
@@ -107,13 +125,7 @@
       await navigator.serviceWorker.ready;
 
       const worker = registration.active || navigator.serviceWorker.controller;
-
-      if (worker) {
-        worker.postMessage({
-          type: CACHE_MESSAGE_TYPE,
-          urls: collectCurrentPageUrls(),
-        });
-      }
+      cacheCurrentPage(worker);
     } catch (error) {
       // Offline reading is progressive enhancement; registration failures should stay silent.
     }

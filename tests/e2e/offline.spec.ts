@@ -145,6 +145,97 @@ test('fresh network navigations win when cache writes fail', async ({ context, p
   await expect(page.locator('[data-offline-fallback]')).toHaveCount(0);
 });
 
+test('a successful navigation replaces its stale offline copy before load completes', async ({
+  context,
+  page,
+}) => {
+  await page.goto('/about');
+  await waitForCachedUrls(page, ['/about']);
+
+  const worker = context.serviceWorkers().find((candidate) =>
+    candidate.url().includes('/offline-sw.js'),
+  );
+
+  expect(worker).toBeDefined();
+
+  await worker!.evaluate(() => {
+    const originalFetch = self.fetch.bind(self);
+    const originalOpen = caches.open.bind(caches);
+
+    self.__serveUpdatedDeployment = true;
+    self.fetch = async (...args) => {
+      const request = args[0] instanceof Request ? args[0] : new Request(args[0], args[1]);
+
+      if (self.__serveUpdatedDeployment && new URL(request.url).pathname === '/about') {
+        return new Response('<!doctype html><title>Updated</title><h1>Updated deployment</h1>', {
+          headers: { 'Content-Type': 'text/html; charset=utf-8' },
+        });
+      }
+
+      return originalFetch(...args);
+    };
+
+    caches.open = async (...args) => {
+      const cache = await originalOpen(...args);
+
+      return new Proxy(cache, {
+        get(target, property, receiver) {
+          if (property === 'put') {
+            return async (request: RequestInfo, response: Response) => {
+              const url = new URL(
+                request instanceof Request ? request.url : request,
+                self.location.origin,
+              );
+
+              if (url.pathname === '/about') {
+                await new Promise((resolve) => setTimeout(resolve, 3_000));
+              }
+
+              return target.put(request, response);
+            };
+          }
+
+          const value = Reflect.get(target, property, receiver);
+
+          return typeof value === 'function' ? value.bind(target) : value;
+        },
+      });
+    };
+  });
+
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'Updated deployment' })).toBeVisible();
+
+  await worker!.evaluate(() => {
+    self.__serveUpdatedDeployment = false;
+  });
+  await context.setOffline(true);
+  const response = await page.reload();
+
+  expect(response?.ok()).toBe(true);
+  await expect(page.getByRole('heading', { name: 'Updated deployment' })).toBeVisible();
+});
+
+test('a replacement service worker recaches the page that is already open', async ({ page }) => {
+  await page.goto('/about');
+  await waitForCachedUrls(page, ['/about']);
+
+  await page.evaluate(async () => {
+    const cacheNames = await caches.keys();
+
+    await Promise.all(
+      cacheNames
+        .filter((cacheName) => cacheName.startsWith('kevinkelchen-offline-reading-'))
+        .map((cacheName) => caches.delete(cacheName)),
+    );
+
+    // A newly activated worker claims the existing page and emits this event.
+    navigator.serviceWorker.dispatchEvent(new Event('controllerchange'));
+  });
+
+  await waitForCachedUrls(page, ['/about']);
+});
+
 test('cache messages skip URLs already saved for offline reading', async ({ context, page }) => {
   await page.goto('/');
   await waitForCachedUrls(page, ['/']);

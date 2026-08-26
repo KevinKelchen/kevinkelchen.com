@@ -3,7 +3,7 @@ import { OFFLINE_FALLBACK_HTML } from '/offline-fallback.js';
 // Bump CACHE_NAME whenever this worker's logic or the /offline.html fallback
 // changes: activation deletes superseded caches, and the version change is what
 // pushes a fresh fallback to long-idle installs at their next update check.
-const CACHE_NAME = 'kevinkelchen-offline-reading-v5';
+const CACHE_NAME = 'kevinkelchen-offline-reading-v6';
 const CACHE_PREFIX = 'kevinkelchen-offline-reading-';
 const OFFLINE_FALLBACK_URL = '/offline.html';
 const CACHEABLE_DESTINATIONS = new Set(['document', 'style', 'script', 'image', 'font']);
@@ -134,10 +134,13 @@ async function fetchAndCache(request, event) {
   const response = await fetch(request);
 
   if (isCacheableResponse(response)) {
-    event.waitUntil(cacheResponse(request, response.clone()));
-
     if (request.mode === 'navigate') {
+      // Once an updated page finishes loading, an immediate offline reload
+      // must not be able to fall back to the previous deployment's document.
+      await cacheResponse(request, response.clone());
       event.waitUntil(refreshOfflineFallback());
+    } else {
+      event.waitUntil(cacheResponse(request, response.clone()));
     }
   }
 
