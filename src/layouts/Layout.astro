@@ -33,6 +33,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       title={SITE_TITLE}
       href={new URL('rss.xml', Astro.site)}
     />
+    <script
+      src="/offline-reading.js"
+      data-offline-reading={import.meta.env.PROD ? 'enabled' : 'disabled'}
+      defer
+    ></script>
   </head>
   <body class="mx-auto flex min-h-screen max-w-2xl flex-col px-6 text-gray-900 antialiased">
     <header class="flex items-center justify-between py-6">

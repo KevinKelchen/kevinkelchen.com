@@ -10,6 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "test:e2e": "npm run build && playwright test",
+    "test:e2e:offline": "playwright test --project=offline-build",
     "test:e2e:update": "npm run build && playwright test --update-snapshots",
     "astro": "astro"
   },
