@@ -48,10 +48,10 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <footer class="flex flex-col items-start gap-4 border-t border-gray-200 py-8 text-sm text-gray-600 sm:flex-row sm:items-center sm:justify-between">
       <p>© {new Date().getFullYear()} Kevin Kelchen</p>
       <nav class="flex gap-5">
-        <a href={SOCIALS.github} class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">GitHub</a>
-        <a href={SOCIALS.linkedin} class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">LinkedIn</a>
-        <a href={SOCIALS.x} class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">X</a>
-        <a href="/rss.xml" class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">RSS</a>
+        <a href={SOCIALS.github} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">GitHub</a>
+        <a href={SOCIALS.linkedin} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">LinkedIn</a>
+        <a href={SOCIALS.x} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">X</a>
+        <a href="/rss.xml" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">RSS</a>
       </nav>
     </footer>
   </body>

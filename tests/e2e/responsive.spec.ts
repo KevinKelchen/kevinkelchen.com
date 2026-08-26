@@ -21,6 +21,18 @@ test('footer stacks its content at the 320px minimum width', async ({ page }) =>
   expect(links!.y).toBeGreaterThanOrEqual(copyright!.y + copyright!.height + 16);
 });
 
+test('footer links open in a new tab', async ({ page }) => {
+  await page.goto('/');
+
+  const links = page.locator('body > footer > nav a');
+
+  expect(await links.count()).toBeGreaterThan(0);
+  for (const link of await links.all()) {
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  }
+});
+
 test('site navigation remains touch-friendly at the 320px minimum width', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
   await page.goto('/');
