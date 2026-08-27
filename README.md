@@ -10,9 +10,18 @@ Add a Markdown file to `src/content/blog/`. The filename becomes the URL slug: `
 
 ## Commands
 
-| Command           | Action                                    |
-| :---------------- | :---------------------------------------- |
-| `npm install`     | Install dependencies                      |
-| `npm run dev`     | Dev server at `localhost:4321`            |
-| `npm run build`   | Production build to `./dist/`             |
-| `npm run preview` | Preview the production build locally      |
+| Command                | Action                                    |
+| :--------------------- | :---------------------------------------- |
+| `npm install`          | Install dependencies                      |
+| `npm run dev`          | Dev server at `localhost:4321`            |
+| `npm run build`        | Production build to `./dist/`             |
+| `npm run preview`      | Preview the production build locally      |
+| `npm run lint`         | Astro, TypeScript, and accessibility lint |
+| `npm run lint:fix`     | Autofix supported lint violations         |
+| `npm run format`       | Format supported project files            |
+| `npm run format:check` | Check project formatting                  |
+| `npm run fix`          | Apply lint and formatting fixes           |
+| `npm run verify`       | Autofix, then run all browser tests       |
+| `npm run verify:check` | Read-only verification for CI             |
+| `npm run test:a11y`    | WCAG 2.2 AA browser regression checks     |
+| `npm run test:e2e`     | Build and run the full browser test suite |

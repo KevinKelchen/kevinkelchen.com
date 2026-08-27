@@ -26,7 +26,10 @@ test('footer stacks social links above the copyright at the 320px minimum width'
 test('header nav lists Blog then About', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page.locator('body > header > nav a')).toHaveText(['Blog', 'About']);
+  await expect(page.locator('body > header > nav a')).toHaveText([
+    'Blog',
+    'About',
+  ]);
 });
 
 test('footer links open in a new tab', async ({ page }) => {
@@ -44,15 +47,20 @@ test('footer links open in a new tab', async ({ page }) => {
 test('footer link labels are evenly spaced', async ({ page }) => {
   await page.goto('/');
 
-  const gaps = await page.locator('body > footer > nav a').evaluateAll((links) =>
-    links.slice(1).map((link, index) => {
-      const previous = document.createRange();
-      previous.selectNodeContents(links[index]!);
-      const current = document.createRange();
-      current.selectNodeContents(link);
-      return current.getBoundingClientRect().x - previous.getBoundingClientRect().right;
-    }),
-  );
+  const gaps = await page
+    .locator('body > footer > nav a')
+    .evaluateAll((links) =>
+      links.slice(1).map((link, index) => {
+        const previous = document.createRange();
+        previous.selectNodeContents(links[index]!);
+        const current = document.createRange();
+        current.selectNodeContents(link);
+        return (
+          current.getBoundingClientRect().x -
+          previous.getBoundingClientRect().right
+        );
+      }),
+    );
 
   expect(gaps.length).toBeGreaterThan(1);
   for (const gap of gaps) {
@@ -60,11 +68,15 @@ test('footer link labels are evenly spaced', async ({ page }) => {
   }
 });
 
-test('site navigation remains touch-friendly at the 320px minimum width', async ({ page }) => {
+test('site navigation remains touch-friendly at the 320px minimum width', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 320, height: 800 });
   await page.goto('/');
 
-  const links = page.locator('body > header > a, body > header > nav a, body > footer > nav a');
+  const links = page.locator(
+    'body > header > a, body > header > nav a, body > footer > nav a',
+  );
 
   for (const link of await links.all()) {
     const size = await link.evaluate((element) => {
@@ -86,7 +98,9 @@ test('site navigation remains touch-friendly at the 320px minimum width', async 
 
 for (const sitePage of pages) {
   for (const width of viewportWidths) {
-    test(`${sitePage.name} remains responsive at ${width}px`, async ({ page }) => {
+    test(`${sitePage.name} remains responsive at ${width}px`, async ({
+      page,
+    }) => {
       await page.setViewportSize({ width, height: 800 });
       const response = await page.goto(sitePage.path);
 

@@ -9,8 +9,16 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "fix": "npm run lint:fix && npm run format",
+    "verify": "npm run fix && npm run test:e2e",
+    "verify:check": "npm run format:check && npm run lint && npm run test:e2e",
     "test:e2e": "npm run build && playwright test",
-    "test:e2e:offline": "playwright test --project=offline-build",
+    "test:a11y": "PLAYWRIGHT_PROJECT=dev playwright test tests/e2e/accessibility.spec.ts --project=dev",
+    "test:e2e:offline": "npm run build && PLAYWRIGHT_PROJECT=offline-build playwright test --project=offline-build",
     "test:e2e:update": "npm run build && playwright test --update-snapshots",
     "astro": "astro"
   },
@@ -26,6 +34,15 @@
     "esbuild": true
   },
   "devDependencies": {
-    "@playwright/test": "^1.62.1"
+    "@axe-core/playwright": "^4.13.0",
+    "@eslint/js": "^9.39.5",
+    "@playwright/test": "^1.62.1",
+    "eslint": "^9.39.5",
+    "eslint-plugin-astro": "^1.7.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "globals": "^16.5.0",
+    "prettier": "3.9.6",
+    "prettier-plugin-astro": "0.14.1",
+    "typescript-eslint": "^8.68.0"
   }
 }

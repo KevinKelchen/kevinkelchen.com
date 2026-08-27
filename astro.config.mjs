@@ -8,11 +8,11 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://kevinkelchen.com',
   devToolbar: {
-    enabled: process.env.PLAYWRIGHT_TEST !== '1'
+    enabled: process.env.PLAYWRIGHT_TEST !== '1',
   },
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
   },
 
-  integrations: [sitemap()]
+  integrations: [sitemap()],
 });

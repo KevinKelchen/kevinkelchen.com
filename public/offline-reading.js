@@ -15,8 +15,14 @@
     await Promise.all(
       registrations
         .filter((registration) =>
-          [registration.installing, registration.waiting, registration.active].some(
-            (worker) => worker && new URL(worker.scriptURL).pathname === SERVICE_WORKER_URL,
+          [
+            registration.installing,
+            registration.waiting,
+            registration.active,
+          ].some(
+            (worker) =>
+              worker &&
+              new URL(worker.scriptURL).pathname === SERVICE_WORKER_URL,
           ),
         )
         .map((registration) => registration.unregister()),
@@ -57,7 +63,7 @@
       if (url.origin === window.location.origin) {
         urls.add(url.href);
       }
-    } catch (error) {
+    } catch {
       // Ignore malformed URLs from browser-provided resource metadata.
     }
   };
@@ -91,9 +97,11 @@
         addSameOriginUrl(urls, element.href || element.src);
       });
 
-    document.querySelectorAll('img[srcset], source[srcset]').forEach((element) => {
-      addSrcsetUrls(urls, element.getAttribute('srcset') || '');
-    });
+    document
+      .querySelectorAll('img[srcset], source[srcset]')
+      .forEach((element) => {
+        addSrcsetUrls(urls, element.getAttribute('srcset') || '');
+      });
 
     return Array.from(urls);
   };
@@ -118,15 +126,18 @@
 
   const registerOfflineReading = async () => {
     try {
-      const registration = await navigator.serviceWorker.register(SERVICE_WORKER_URL, {
-        scope: '/',
-        type: 'module',
-      });
+      const registration = await navigator.serviceWorker.register(
+        SERVICE_WORKER_URL,
+        {
+          scope: '/',
+          type: 'module',
+        },
+      );
       await navigator.serviceWorker.ready;
 
       const worker = registration.active || navigator.serviceWorker.controller;
       cacheCurrentPage(worker);
-    } catch (error) {
+    } catch {
       // Offline reading is progressive enhancement; registration failures should stay silent.
     }
   };

@@ -3,16 +3,24 @@ import { OFFLINE_FALLBACK_HTML } from '/offline-fallback.js';
 // Bump CACHE_NAME whenever this worker's logic or the /offline.html fallback
 // changes: activation deletes superseded caches, and the version change is what
 // pushes a fresh fallback to long-idle installs at their next update check.
-const CACHE_NAME = 'kevinkelchen-offline-reading-v6';
+const CACHE_NAME = 'kevinkelchen-offline-reading-v7';
 const CACHE_PREFIX = 'kevinkelchen-offline-reading-';
 const OFFLINE_FALLBACK_URL = '/offline.html';
-const CACHEABLE_DESTINATIONS = new Set(['document', 'style', 'script', 'image', 'font']);
+const CACHEABLE_DESTINATIONS = new Set([
+  'document',
+  'style',
+  'script',
+  'image',
+  'font',
+]);
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => cache.add(new Request(OFFLINE_FALLBACK_URL, { cache: 'reload' }))),
+      .then((cache) =>
+        cache.add(new Request(OFFLINE_FALLBACK_URL, { cache: 'reload' })),
+      ),
   );
   self.skipWaiting();
 });
@@ -25,7 +33,11 @@ self.addEventListener('activate', (event) => {
         .then((cacheNames) =>
           Promise.all(
             cacheNames
-              .filter((cacheName) => cacheName.startsWith(CACHE_PREFIX) && cacheName !== CACHE_NAME)
+              .filter(
+                (cacheName) =>
+                  cacheName.startsWith(CACHE_PREFIX) &&
+                  cacheName !== CACHE_NAME,
+              )
               .map((cacheName) => caches.delete(cacheName)),
           ),
         ),
@@ -76,11 +88,17 @@ function shouldHandleRequest(request) {
 
   const url = new URL(request.url);
 
-  if (url.origin !== self.location.origin || url.pathname === '/offline-sw.js') {
+  if (
+    url.origin !== self.location.origin ||
+    url.pathname === '/offline-sw.js'
+  ) {
     return false;
   }
 
-  if (request.mode === 'navigate' || CACHEABLE_DESTINATIONS.has(request.destination)) {
+  if (
+    request.mode === 'navigate' ||
+    CACHEABLE_DESTINATIONS.has(request.destination)
+  ) {
     return true;
   }
 
@@ -102,7 +120,9 @@ async function networkFirst(request, event) {
     }
 
     if (request.mode === 'navigate') {
-      const fallbackResponse = await caches.match(OFFLINE_FALLBACK_URL, { ignoreVary: true });
+      const fallbackResponse = await caches.match(OFFLINE_FALLBACK_URL, {
+        ignoreVary: true,
+      });
 
       if (fallbackResponse) {
         return fallbackResponse;
@@ -151,7 +171,7 @@ async function cacheResponse(request, response) {
   try {
     const cache = await caches.open(CACHE_NAME);
     await cache.put(normalizeRequest(request), await stripRedirect(response));
-  } catch (error) {
+  } catch {
     // A full or unavailable cache should never make fresh network responses look offline.
   }
 }
@@ -169,7 +189,9 @@ async function refreshOfflineFallback() {
   fallbackRefreshed = true;
 
   try {
-    const response = await fetch(new Request(OFFLINE_FALLBACK_URL, { cache: 'no-cache' }));
+    const response = await fetch(
+      new Request(OFFLINE_FALLBACK_URL, { cache: 'no-cache' }),
+    );
 
     if (isCacheableResponse(response)) {
       const cache = await caches.open(CACHE_NAME);
@@ -177,7 +199,7 @@ async function refreshOfflineFallback() {
     } else {
       fallbackRefreshed = false;
     }
-  } catch (error) {
+  } catch {
     // Keep the installed copy and retry on a later navigation.
     fallbackRefreshed = false;
   }
@@ -205,7 +227,9 @@ async function cacheUrls(urls) {
     }),
   );
 
-  return results.filter((result) => result.status === 'fulfilled' && result.value).length;
+  return results.filter(
+    (result) => result.status === 'fulfilled' && result.value,
+  ).length;
 }
 
 // Static hosts may 301 `/blog/x` to `/blog/x/`, so a page can be cached under
@@ -262,12 +286,15 @@ function toSameOriginUrl(value) {
     const url = new URL(value, self.location.origin);
     url.hash = '';
 
-    if (url.origin !== self.location.origin || url.pathname === '/offline-sw.js') {
+    if (
+      url.origin !== self.location.origin ||
+      url.pathname === '/offline-sw.js'
+    ) {
       return null;
     }
 
     return url;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -281,9 +308,13 @@ function toRequest(value) {
 function normalizeRequest(request) {
   const url = toSameOriginUrl(request.url);
 
-  return url ? new Request(url.href, { credentials: request.credentials }) : request;
+  return url
+    ? new Request(url.href, { credentials: request.credentials })
+    : request;
 }
 
 function isCacheableResponse(response) {
-  return response.ok && (response.type === 'basic' || response.type === 'default');
+  return (
+    response.ok && (response.type === 'basic' || response.type === 'default')
+  );
 }

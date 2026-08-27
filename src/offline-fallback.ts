@@ -19,7 +19,21 @@ export const renderOfflineFallback = () => `<!doctype html>
 
       html {
         color-scheme: light;
-        background: #ffffff;
+        --background: #ffffff;
+        --border: oklch(0.928 0.006 264.531);
+        --muted: oklch(0.446 0.03 256.802);
+        --secondary-text: oklch(0.373 0.034 259.733);
+        --text: oklch(0.21 0.034 264.665);
+        background: var(--background);
+      }
+
+      html.dark {
+        color-scheme: dark;
+        --background: #030712;
+        --border: #1f2937;
+        --muted: #9ca3af;
+        --secondary-text: #d1d5db;
+        --text: #f3f4f6;
       }
 
       body {
@@ -30,8 +44,8 @@ export const renderOfflineFallback = () => `<!doctype html>
         flex-direction: column;
         width: 100%;
         max-width: 42rem;
-        color: oklch(0.21 0.034 264.665);
-        background: #ffffff;
+        color: var(--text);
+        background: var(--background);
         font-family:
           -apple-system, "system-ui", "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial,
           sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -56,6 +70,17 @@ export const renderOfflineFallback = () => `<!doctype html>
         text-decoration: underline;
       }
 
+      button {
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      button:focus-visible {
+        outline: 2px solid var(--text);
+        outline-offset: 2px;
+      }
+
       header {
         display: flex;
         align-items: center;
@@ -74,13 +99,14 @@ export const renderOfflineFallback = () => `<!doctype html>
       header nav,
       footer nav {
         display: flex;
-        gap: 1.25rem;
+        gap: 0.5rem;
       }
 
       header nav {
+        align-items: center;
         font-size: 0.875rem;
         line-height: 1.25rem;
-        color: oklch(0.446 0.03 256.802);
+        color: var(--muted);
       }
 
       header nav a,
@@ -111,7 +137,39 @@ export const renderOfflineFallback = () => `<!doctype html>
 
       header nav a:hover,
       footer nav a:hover {
-        color: oklch(0.21 0.034 264.665);
+        color: var(--text);
+      }
+
+      .theme-toggle {
+        flex: none;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        border-radius: 0.375rem;
+        background: transparent;
+      }
+
+      .theme-toggle:hover {
+        color: var(--text);
+        background: color-mix(in srgb, var(--text) 8%, transparent);
+      }
+
+      .theme-toggle svg {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+
+      .sun-icon,
+      .dark .moon-icon {
+        display: none;
+      }
+
+      .dark .sun-icon {
+        display: block;
       }
 
       .offline-message {
@@ -128,7 +186,7 @@ export const renderOfflineFallback = () => `<!doctype html>
 
       p {
         margin: 1rem 0 0;
-        color: oklch(0.373 0.034 259.733);
+        color: var(--secondary-text);
       }
 
       footer {
@@ -137,8 +195,8 @@ export const renderOfflineFallback = () => `<!doctype html>
         align-items: flex-start;
         gap: 1rem;
         padding: 2rem 0;
-        border-top: 1px solid oklch(0.928 0.006 264.531);
-        color: oklch(0.446 0.03 256.802);
+        border-top: 1px solid var(--border);
+        color: var(--muted);
         font-size: 0.875rem;
         line-height: 1.25rem;
       }
@@ -147,13 +205,46 @@ export const renderOfflineFallback = () => `<!doctype html>
         margin: 0;
         color: inherit;
       }
+
+      @media (min-width: 640px) {
+        header nav,
+        footer nav {
+          gap: 1.25rem;
+        }
+      }
     </style>
+    <script>
+      (() => {
+        try {
+          const savedTheme = localStorage.getItem('theme');
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.classList.toggle(
+            'dark',
+            savedTheme === 'dark' || (savedTheme === null && prefersDark),
+          );
+        } catch {
+          document.documentElement.classList.toggle(
+            'dark',
+            window.matchMedia('(prefers-color-scheme: dark)').matches,
+          );
+        }
+      })();
+    </script>
   </head>
   <body>
     <header>
       <a href="/" class="site-title">${SITE_TITLE}</a>
-      <nav>
+      <nav aria-label="Primary navigation">
         ${HEADER_LINKS.map((link) => `<a href="${link.href}">${link.label}</a>`).join('\n        ')}
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark mode">
+          <svg class="moon-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path>
+          </svg>
+          <svg class="sun-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
       </nav>
     </header>
     <main data-offline-fallback>
@@ -174,6 +265,26 @@ export const renderOfflineFallback = () => `<!doctype html>
       </nav>
       <p>© ${new Date().getFullYear()} ${SITE_TITLE}</p>
     </footer>
+    <script>
+      const toggle = document.querySelector('#theme-toggle');
+
+      const updateLabel = () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        toggle?.setAttribute('aria-label', 'Switch to ' + (isDark ? 'light' : 'dark') + ' mode');
+      };
+
+      toggle?.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.toggle('dark');
+        try {
+          localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        } catch {
+          // The selected theme still applies for this page when storage is unavailable.
+        }
+        updateLabel();
+      });
+
+      updateLabel();
+    </script>
   </body>
 </html>
 `;
