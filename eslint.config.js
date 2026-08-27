@@ -18,7 +18,7 @@ export default [
     },
   },
   {
-    files: ['public/offline-reading.js'],
+    files: ['public/offline-reading.js', 'public/theme-*.js'],
     languageOptions: {
       globals: globals.browser,
     },

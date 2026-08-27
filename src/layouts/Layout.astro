@@ -32,25 +32,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:type" content="website" />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <script is:inline>
-      (() => {
-        try {
-          const savedTheme = localStorage.getItem('theme');
-          const prefersDark = window.matchMedia(
-            '(prefers-color-scheme: dark)',
-          ).matches;
-          document.documentElement.classList.toggle(
-            'dark',
-            savedTheme === 'dark' || (savedTheme === null && prefersDark),
-          );
-        } catch {
-          document.documentElement.classList.toggle(
-            'dark',
-            window.matchMedia('(prefers-color-scheme: dark)').matches,
-          );
-        }
-      })();
-    </script>
+    <script is:inline src="/theme-init.js"></script>
     <link
       rel="alternate"
       type="application/rss+xml"
@@ -61,6 +43,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       src="/offline-reading.js"
       data-offline-reading={import.meta.env.PROD ? 'enabled' : 'disabled'}
       defer></script>
+    <script is:inline src="/theme-toggle.js" defer></script>
   </head>
   <body
     class="mx-auto flex min-h-screen max-w-2xl flex-col bg-white px-6 text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100"
@@ -139,28 +122,5 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       </nav>
       <p>© {new Date().getFullYear()} {SITE_TITLE}</p>
     </footer>
-    <script>
-      const toggle = document.querySelector<HTMLButtonElement>('#theme-toggle');
-
-      const updateLabel = () => {
-        const isDark = document.documentElement.classList.contains('dark');
-        toggle?.setAttribute(
-          'aria-label',
-          `Switch to ${isDark ? 'light' : 'dark'} mode`,
-        );
-      };
-
-      toggle?.addEventListener('click', () => {
-        const isDark = document.documentElement.classList.toggle('dark');
-        try {
-          localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        } catch {
-          // The selected theme still applies for this page when storage is unavailable.
-        }
-        updateLabel();
-      });
-
-      updateLabel();
-    </script>
   </body>
 </html>

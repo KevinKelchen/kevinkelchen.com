@@ -213,23 +213,8 @@ export const renderOfflineFallback = () => `<!doctype html>
         }
       }
     </style>
-    <script>
-      (() => {
-        try {
-          const savedTheme = localStorage.getItem('theme');
-          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          document.documentElement.classList.toggle(
-            'dark',
-            savedTheme === 'dark' || (savedTheme === null && prefersDark),
-          );
-        } catch {
-          document.documentElement.classList.toggle(
-            'dark',
-            window.matchMedia('(prefers-color-scheme: dark)').matches,
-          );
-        }
-      })();
-    </script>
+    <script src="/theme-init.js"></script>
+    <script src="/theme-toggle.js" defer></script>
   </head>
   <body>
     <header>
@@ -265,26 +250,6 @@ export const renderOfflineFallback = () => `<!doctype html>
       </nav>
       <p>© ${new Date().getFullYear()} ${SITE_TITLE}</p>
     </footer>
-    <script>
-      const toggle = document.querySelector('#theme-toggle');
-
-      const updateLabel = () => {
-        const isDark = document.documentElement.classList.contains('dark');
-        toggle?.setAttribute('aria-label', 'Switch to ' + (isDark ? 'light' : 'dark') + ' mode');
-      };
-
-      toggle?.addEventListener('click', () => {
-        const isDark = document.documentElement.classList.toggle('dark');
-        try {
-          localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        } catch {
-          // The selected theme still applies for this page when storage is unavailable.
-        }
-        updateLabel();
-      });
-
-      updateLabel();
-    </script>
   </body>
 </html>
 `;

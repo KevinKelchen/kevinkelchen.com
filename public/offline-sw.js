@@ -3,7 +3,7 @@ import { OFFLINE_FALLBACK_HTML } from '/offline-fallback.js';
 // Bump CACHE_NAME whenever this worker's logic or the /offline.html fallback
 // changes: activation deletes superseded caches, and the version change is what
 // pushes a fresh fallback to long-idle installs at their next update check.
-const CACHE_NAME = 'kevinkelchen-offline-reading-v7';
+const CACHE_NAME = 'kevinkelchen-offline-reading-v8';
 const CACHE_PREFIX = 'kevinkelchen-offline-reading-';
 const OFFLINE_FALLBACK_URL = '/offline.html';
 const CACHEABLE_DESTINATIONS = new Set([
