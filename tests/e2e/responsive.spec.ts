@@ -41,6 +41,25 @@ test('footer links open in a new tab', async ({ page }) => {
   }
 });
 
+test('footer link labels are evenly spaced', async ({ page }) => {
+  await page.goto('/');
+
+  const gaps = await page.locator('body > footer > nav a').evaluateAll((links) =>
+    links.slice(1).map((link, index) => {
+      const previous = document.createRange();
+      previous.selectNodeContents(links[index]!);
+      const current = document.createRange();
+      current.selectNodeContents(link);
+      return current.getBoundingClientRect().x - previous.getBoundingClientRect().right;
+    }),
+  );
+
+  expect(gaps.length).toBeGreaterThan(1);
+  for (const gap of gaps) {
+    expect(gap).toBeCloseTo(gaps[0]!, 0);
+  }
+});
+
 test('site navigation remains touch-friendly at the 320px minimum width', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
   await page.goto('/');
@@ -48,10 +67,20 @@ test('site navigation remains touch-friendly at the 320px minimum width', async 
   const links = page.locator('body > header > a, body > header > nav a, body > footer > nav a');
 
   for (const link of await links.all()) {
-    const box = await link.boundingBox();
-    expect(box).not.toBeNull();
-    expect(box!.width).toBeGreaterThanOrEqual(44);
-    expect(box!.height).toBeGreaterThanOrEqual(44);
+    const size = await link.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      const before = getComputedStyle(element, '::before');
+      const hasHitArea = before.content !== 'none' && before.content !== '';
+      const beforeWidth = hasHitArea ? Number.parseFloat(before.width) : 0;
+      const beforeHeight = hasHitArea ? Number.parseFloat(before.height) : 0;
+      return {
+        width: Math.max(rect.width, beforeWidth),
+        height: Math.max(rect.height, beforeHeight),
+      };
+    });
+
+    expect(size.width).toBeGreaterThanOrEqual(44);
+    expect(size.height).toBeGreaterThanOrEqual(44);
   }
 });
 

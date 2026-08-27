@@ -54,7 +54,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <footer class="flex flex-col items-start gap-4 border-t border-gray-200 py-8 text-sm text-gray-600">
       <nav class="flex gap-5">
         {FOOTER_LINKS.map((link) => (
-          <a href={link.href} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 min-w-11 items-center justify-start hover:text-gray-900 hover:underline">{link.label}</a>
+          <a href={link.href} target="_blank" rel="noopener noreferrer" class="relative inline-flex min-h-11 items-center hover:text-gray-900 hover:underline before:absolute before:top-1/2 before:left-1/2 before:h-11 before:w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']">{link.label}</a>
         ))}
       </nav>
       <p>© {new Date().getFullYear()} {SITE_TITLE}</p>

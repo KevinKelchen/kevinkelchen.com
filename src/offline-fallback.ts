@@ -87,16 +87,26 @@ export const renderOfflineFallback = () => `<!doctype html>
       footer nav a {
         display: inline-flex;
         min-height: 44px;
-        min-width: 44px;
         align-items: center;
       }
 
       header nav a {
+        min-width: 44px;
         justify-content: center;
       }
 
       footer nav a {
-        justify-content: flex-start;
+        position: relative;
+      }
+
+      footer nav a::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 44px;
+        height: 44px;
+        transform: translate(-50%, -50%);
       }
 
       header nav a:hover,
