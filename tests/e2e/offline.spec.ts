@@ -278,7 +278,14 @@ test('uncached navigations show the offline fallback', async ({ context, page })
   await expect(page.locator('[data-offline-fallback]')).toBeVisible();
   await expect(page.getByRole('heading', { name: "You're offline" })).toBeVisible();
   await expect(page.locator('body > header')).toBeVisible();
+  await expect(page.locator('body > header > nav a')).toHaveText(['Blog', 'About']);
   await expect(page.locator('body > footer')).toBeVisible();
+  await expect(page.locator('body > footer > nav a')).toHaveText([
+    'X',
+    'LinkedIn',
+    'GitHub',
+    'RSS',
+  ]);
   await expect(page.getByRole('link', { name: 'Archive' })).toHaveCount(0);
 
   const dimensions = await page.evaluate(() => ({

@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { SITE_TITLE, SITE_DESCRIPTION, SOCIALS } from '../consts';
+import { SITE_TITLE, SITE_DESCRIPTION, HEADER_LINKS, FOOTER_LINKS } from '../consts';
 
 interface Props {
   title?: string;
@@ -43,21 +43,21 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <header class="flex items-center justify-between py-6">
       <a href="/" class="inline-flex min-h-11 items-center font-semibold tracking-tight hover:underline">{SITE_TITLE}</a>
       <nav class="flex gap-5 text-sm text-gray-600">
-        <a href="/blog" class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">Blog</a>
-        <a href="/about" class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">About</a>
+        {HEADER_LINKS.map((link) => (
+          <a href={link.href} class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">{link.label}</a>
+        ))}
       </nav>
     </header>
     <main class="flex-1 pb-16">
       <slot />
     </main>
-    <footer class="flex flex-col items-start gap-4 border-t border-gray-200 py-8 text-sm text-gray-600 sm:flex-row sm:items-center sm:justify-between">
-      <p>© {new Date().getFullYear()} Kevin Kelchen</p>
+    <footer class="flex flex-col items-start gap-4 border-t border-gray-200 py-8 text-sm text-gray-600">
       <nav class="flex gap-5">
-        <a href={SOCIALS.github} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">GitHub</a>
-        <a href={SOCIALS.linkedin} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">LinkedIn</a>
-        <a href={SOCIALS.x} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">X</a>
-        <a href="/rss.xml" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-gray-900 hover:underline">RSS</a>
+        {FOOTER_LINKS.map((link) => (
+          <a href={link.href} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 min-w-11 items-center justify-start hover:text-gray-900 hover:underline">{link.label}</a>
+        ))}
       </nav>
+      <p>© {new Date().getFullYear()} {SITE_TITLE}</p>
     </footer>
   </body>
 </html>

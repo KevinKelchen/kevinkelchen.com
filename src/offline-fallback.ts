@@ -1,4 +1,4 @@
-import { SITE_TITLE, SOCIALS } from './consts';
+import { FOOTER_LINKS, HEADER_LINKS, SITE_TITLE } from './consts';
 
 // Keep the fallback self-contained: the site's hashed CSS may not be cached
 // when the service worker serves this page. Both the HTML route and the
@@ -11,30 +11,34 @@ export const renderOfflineFallback = () => `<!doctype html>
     <title>Offline · ${SITE_TITLE}</title>
     <meta name="robots" content="noindex" />
     <style>
-      :root {
-        color-scheme: light;
-        font-family:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        line-height: 1.5;
-        color: #111827;
-        background: #ffffff;
-      }
-
       *,
       *::before,
       *::after {
         box-sizing: border-box;
       }
 
+      html {
+        color-scheme: light;
+        background: #ffffff;
+      }
+
       body {
         min-height: 100vh;
-        margin: 0;
+        margin: 0 auto;
         padding: 0 1.5rem;
         display: flex;
         flex-direction: column;
         width: 100%;
         max-width: 42rem;
-        margin-inline: auto;
+        color: oklch(0.21 0.034 264.665);
+        background: #ffffff;
+        font-family:
+          -apple-system, "system-ui", "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial,
+          sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-size: 16px;
+        line-height: 24px;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
 
       main {
@@ -42,11 +46,29 @@ export const renderOfflineFallback = () => `<!doctype html>
         padding-bottom: 4rem;
       }
 
+      a {
+        color: inherit;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
       header {
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 1.5rem 0;
+      }
+
+      .site-title {
+        display: inline-flex;
+        min-height: 44px;
+        align-items: center;
+        font-weight: 600;
+        letter-spacing: -0.025em;
       }
 
       header nav,
@@ -57,13 +79,29 @@ export const renderOfflineFallback = () => `<!doctype html>
 
       header nav {
         font-size: 0.875rem;
-        color: #4b5563;
+        line-height: 1.25rem;
+        color: oklch(0.446 0.03 256.802);
       }
 
-      .site-title {
-        font-weight: 600;
-        letter-spacing: -0.025em;
-        text-decoration: none;
+      header nav a,
+      footer nav a {
+        display: inline-flex;
+        min-height: 44px;
+        min-width: 44px;
+        align-items: center;
+      }
+
+      header nav a {
+        justify-content: center;
+      }
+
+      footer nav a {
+        justify-content: flex-start;
+      }
+
+      header nav a:hover,
+      footer nav a:hover {
+        color: oklch(0.21 0.034 264.665);
       }
 
       .offline-message {
@@ -73,27 +111,14 @@ export const renderOfflineFallback = () => `<!doctype html>
       h1 {
         margin: 0;
         font-size: 1.5rem;
-        line-height: 1.2;
-        letter-spacing: 0;
+        font-weight: 700;
+        line-height: 2rem;
+        letter-spacing: -0.025em;
       }
 
       p {
         margin: 1rem 0 0;
-        color: #374151;
-      }
-
-      a {
-        min-height: 44px;
-        min-width: 44px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        color: #111827;
-        cursor: pointer;
-      }
-
-      a:hover {
-        text-decoration: underline;
+        color: oklch(0.373 0.034 259.733);
       }
 
       footer {
@@ -102,22 +127,15 @@ export const renderOfflineFallback = () => `<!doctype html>
         align-items: flex-start;
         gap: 1rem;
         padding: 2rem 0;
-        border-top: 1px solid #e5e7eb;
-        color: #4b5563;
+        border-top: 1px solid oklch(0.928 0.006 264.531);
+        color: oklch(0.446 0.03 256.802);
         font-size: 0.875rem;
+        line-height: 1.25rem;
       }
 
       footer p {
         margin: 0;
         color: inherit;
-      }
-
-      @media (min-width: 640px) {
-        footer {
-          flex-direction: row;
-          align-items: center;
-          justify-content: space-between;
-        }
       }
     </style>
   </head>
@@ -125,8 +143,7 @@ export const renderOfflineFallback = () => `<!doctype html>
     <header>
       <a href="/" class="site-title">${SITE_TITLE}</a>
       <nav>
-        <a href="/blog">Blog</a>
-        <a href="/about">About</a>
+        ${HEADER_LINKS.map((link) => `<a href="${link.href}">${link.label}</a>`).join('\n        ')}
       </nav>
     </header>
     <main data-offline-fallback>
@@ -139,13 +156,13 @@ export const renderOfflineFallback = () => `<!doctype html>
       </section>
     </main>
     <footer>
-      <p>© ${new Date().getFullYear()} ${SITE_TITLE}</p>
       <nav>
-        <a href="${SOCIALS.github}" target="_blank" rel="noopener noreferrer">GitHub</a>
-        <a href="${SOCIALS.linkedin}" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-        <a href="${SOCIALS.x}" target="_blank" rel="noopener noreferrer">X</a>
-        <a href="/rss.xml" target="_blank" rel="noopener noreferrer">RSS</a>
+        ${FOOTER_LINKS.map(
+          (link) =>
+            `<a href="${link.href}" target="_blank" rel="noopener noreferrer">${link.label}</a>`,
+        ).join('\n        ')}
       </nav>
+      <p>© ${new Date().getFullYear()} ${SITE_TITLE}</p>
     </footer>
   </body>
 </html>

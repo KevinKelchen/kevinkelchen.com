@@ -7,3 +7,15 @@ export const SOCIALS = {
   linkedin: 'https://www.linkedin.com/in/kevin-kelchen/',
   x: 'https://x.com/kevinkelchen',
 } as const;
+
+export const HEADER_LINKS = [
+  { label: 'Blog', href: '/blog' },
+  { label: 'About', href: '/about' },
+] as const;
+
+export const FOOTER_LINKS = [
+  { label: 'X', href: SOCIALS.x },
+  { label: 'LinkedIn', href: SOCIALS.linkedin },
+  { label: 'GitHub', href: SOCIALS.github },
+  { label: 'RSS', href: '/rss.xml' },
+] as const;

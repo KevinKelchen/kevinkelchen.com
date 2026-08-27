@@ -9,7 +9,9 @@ const pages = [
 
 const viewportWidths = [320, 375, 768, 1280] as const;
 
-test('footer stacks its content at the 320px minimum width', async ({ page }) => {
+test('footer stacks social links above the copyright at the 320px minimum width', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 320, height: 800 });
   await page.goto('/');
 
@@ -18,7 +20,13 @@ test('footer stacks its content at the 320px minimum width', async ({ page }) =>
 
   expect(copyright).not.toBeNull();
   expect(links).not.toBeNull();
-  expect(links!.y).toBeGreaterThanOrEqual(copyright!.y + copyright!.height + 16);
+  expect(copyright!.y).toBeGreaterThanOrEqual(links!.y + links!.height + 16);
+});
+
+test('header nav lists Blog then About', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.locator('body > header > nav a')).toHaveText(['Blog', 'About']);
 });
 
 test('footer links open in a new tab', async ({ page }) => {
@@ -26,7 +34,7 @@ test('footer links open in a new tab', async ({ page }) => {
 
   const links = page.locator('body > footer > nav a');
 
-  expect(await links.count()).toBeGreaterThan(0);
+  await expect(links).toHaveText(['X', 'LinkedIn', 'GitHub', 'RSS']);
   for (const link of await links.all()) {
     await expect(link).toHaveAttribute('target', '_blank');
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
