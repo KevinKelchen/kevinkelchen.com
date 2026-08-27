@@ -3,6 +3,19 @@
   publish = "dist"
 
 [[headers]]
+  for = "/*"
+
+  [headers.values]
+    # Keep this style hash in sync with the inline <style> in src/offline-fallback.ts.
+    Content-Security-Policy = "default-src 'none'; base-uri 'none'; connect-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self'; style-src 'self' 'sha256-PWB+Roi/YdE2zw/I47zb1TzqMl513S8bq0AMvaUgyhk='; font-src 'self'; worker-src 'self'; upgrade-insecure-requests"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Permissions-Policy = "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+    Referrer-Policy = "no-referrer"
+    Strict-Transport-Security = "max-age=31536000"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+
+[[headers]]
   for = "/_astro/*"
 
   [headers.values]

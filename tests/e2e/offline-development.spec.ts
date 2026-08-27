@@ -1,7 +1,9 @@
 import { expect, test } from '@playwright/test';
 
 test('the development server removes the production offline worker and caches', async ({ page }) => {
-  await page.goto('/');
+  // Seed production state from a page that does not run the development
+  // cleanup script, then visit the app to trigger that cleanup.
+  await page.goto('/offline.html');
 
   await page.evaluate(async () => {
     await navigator.serviceWorker.register('/offline-sw.js', { scope: '/', type: 'module' });
@@ -11,7 +13,7 @@ test('the development server removes the production offline worker and caches', 
     await cache.put('/stale-offline-test', new Response('stale'));
   });
 
-  await page.reload();
+  await page.goto('/');
 
   await expect
     .poll(async () =>
