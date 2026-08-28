@@ -124,6 +124,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       src="/offline-reading.js"
       data-offline-reading={import.meta.env.PROD ? 'enabled' : 'disabled'}
       defer></script>
-    <script is:inline src="/theme-toggle.js" defer></script>
+    <script is:inline src="/theme-toggle.js" data-astro-rerun defer></script>
   </body>
 </html>

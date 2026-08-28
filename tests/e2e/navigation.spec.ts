@@ -62,3 +62,23 @@ test('internal navigation preserves the selected dark theme', async ({
     .evaluate((element) => getComputedStyle(element).backgroundColor);
   expect(backgroundColor).not.toBe('rgb(255, 255, 255)');
 });
+
+test('the theme toggle keeps working after internal navigation', async ({
+  page,
+}) => {
+  await page.goto('/about');
+  await page.getByRole('link', { name: 'Blog' }).click();
+
+  const toggle = page.locator('#theme-toggle');
+  await expect(toggle).toHaveAccessibleName('Switch to dark mode');
+  await toggle.click();
+
+  await expect
+    .poll(() =>
+      page
+        .locator('html')
+        .evaluate((element) => element.classList.contains('dark')),
+    )
+    .toBe(true);
+  await expect(toggle).toHaveAccessibleName('Switch to light mode');
+});
