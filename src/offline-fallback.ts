@@ -213,7 +213,7 @@ export const renderOfflineFallback = () => `<!doctype html>
         }
       }
     </style>
-    <script src="/theme-init.js"></script>
+    <script src="/theme-init.js" defer></script>
     <script src="/theme-toggle.js" defer></script>
   </head>
   <body>
