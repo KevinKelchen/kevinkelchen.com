@@ -1,4 +1,5 @@
 import { FOOTER_LINKS, HEADER_LINKS, SITE_TITLE } from './consts';
+import { THEME_INIT_SCRIPT } from './lib/theme-init';
 
 // Keep the fallback self-contained: the site's hashed CSS may not be cached
 // when the service worker serves this page. Both the HTML route and the
@@ -213,7 +214,7 @@ export const renderOfflineFallback = () => `<!doctype html>
         }
       }
     </style>
-    <script src="/theme-init.js" defer></script>
+    <script>${THEME_INIT_SCRIPT}</script>
     <script src="/theme-toggle.js" defer></script>
   </head>
   <body>

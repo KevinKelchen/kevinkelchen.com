@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -22,13 +23,18 @@ test('built pages comply with the production script policy', async () => {
   expect(netlifyConfig).toContain("script-src 'self'");
 
   const htmlFiles = await findHtmlFiles('dist');
-  const pagesWithInlineScripts: string[] = [];
-
   for (const htmlFile of htmlFiles) {
     const html = await readFile(htmlFile, 'utf8');
-    const inlineScripts = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>/gi)];
-    if (inlineScripts.length > 0) pagesWithInlineScripts.push(htmlFile);
-  }
+    const inlineScripts = [
+      ...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi),
+    ];
 
-  expect(pagesWithInlineScripts).toEqual([]);
+    for (const inlineScript of inlineScripts) {
+      const hash = createHash('sha256')
+        .update(inlineScript[1] ?? '')
+        .digest('base64');
+
+      expect(netlifyConfig).toContain(`'sha256-${hash}'`);
+    }
+  }
 });

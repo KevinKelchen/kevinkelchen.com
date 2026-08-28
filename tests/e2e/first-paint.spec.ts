@@ -1,10 +1,13 @@
 import { expect, test } from '@playwright/test';
 
-test('the header is parsed while the theme initializer is loading', async ({
+test('the saved theme is applied before the header is rendered', async ({
   page,
 }) => {
-  let releaseThemeInit!: () => void;
+  await page.addInitScript(() => localStorage.setItem('theme', 'dark'));
+
+  let themeInitIntercepted = false;
   let resolveThemeInitRequested!: () => void;
+  let releaseThemeInit!: () => void;
   let resolveThemeInitHandled!: () => void;
 
   const themeInitReleased = new Promise<void>((resolve) => {
@@ -18,6 +21,7 @@ test('the header is parsed while the theme initializer is loading', async ({
   });
 
   await page.route('**/theme-init.js', async (route) => {
+    themeInitIntercepted = true;
     resolveThemeInitRequested();
     try {
       const response = await route.fetch();
@@ -28,16 +32,22 @@ test('the header is parsed while the theme initializer is loading', async ({
     }
   });
 
-  const navigation = page.goto('/', { waitUntil: 'commit' });
-  await themeInitRequested;
-
+  await page.goto('/', { waitUntil: 'commit' });
+  await Promise.race([themeInitRequested, page.waitForTimeout(200)]);
   try {
     await expect(page.locator('body > header')).toHaveCount(1);
+    await expect
+      .poll(() =>
+        page
+          .locator('html')
+          .evaluate((element) => element.classList.contains('dark')),
+      )
+      .toBe(true);
   } finally {
     releaseThemeInit();
-    await themeInitHandled;
+    if (themeInitIntercepted) await themeInitHandled;
   }
 
-  await navigation;
+  await page.waitForLoadState('load');
   await expect(page.locator('body > header')).toBeVisible();
 });
