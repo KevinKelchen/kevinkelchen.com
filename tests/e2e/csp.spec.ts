@@ -23,6 +23,17 @@ test('built pages comply with the production script policy', async () => {
   expect(netlifyConfig).toContain("script-src 'self'");
 
   const htmlFiles = await findHtmlFiles('dist');
+  const homepage = await readFile('dist/index.html', 'utf8');
+  const stylesheetIndex = homepage.indexOf('<link rel="stylesheet"');
+
+  expect(stylesheetIndex).toBeGreaterThanOrEqual(0);
+
+  for (const script of ['/offline-reading.js', '/theme-toggle.js']) {
+    expect(homepage.indexOf(`src="${script}"`)).toBeGreaterThan(
+      stylesheetIndex,
+    );
+  }
+
   for (const htmlFile of htmlFiles) {
     const html = await readFile(htmlFile, 'utf8');
     const inlineScripts = [
