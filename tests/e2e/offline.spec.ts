@@ -321,7 +321,13 @@ test('uncached navigations show the offline fallback', async ({
 
   expect(response?.ok()).toBe(true);
   await expect(page.locator('[data-offline-fallback]')).toBeVisible();
-  await expect(page.locator('html')).toHaveClass(/dark/);
+  await expect
+    .poll(() =>
+      page
+        .locator('html')
+        .evaluate((element) => element.classList.contains('dark')),
+    )
+    .toBe(true);
   await expect(
     page.getByRole('button', { name: 'Switch to light mode' }),
   ).toBeVisible();
@@ -389,7 +395,13 @@ test('uncached navigations still show a fallback when the runtime cache is missi
 
   expect(response?.ok()).toBe(true);
   await expect(page.locator('[data-offline-fallback]')).toBeVisible();
-  await expect(page.locator('html')).toHaveClass(/dark/);
+  await expect
+    .poll(() =>
+      page
+        .locator('html')
+        .evaluate((element) => element.classList.contains('dark')),
+    )
+    .toBe(true);
   await expect(
     page.getByRole('button', { name: 'Switch to light mode' }),
   ).toBeVisible();

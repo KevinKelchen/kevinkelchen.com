@@ -14,4 +14,15 @@ export const THEME_INIT_SCRIPT = `(() => {
       window.matchMedia('(prefers-color-scheme: dark)').matches,
     );
   }
+
+  document.addEventListener('astro:before-swap', (event) => {
+    const nextDocument = event.newDocument;
+
+    if (nextDocument) {
+      nextDocument.documentElement.classList.toggle(
+        'dark',
+        document.documentElement.classList.contains('dark'),
+      );
+    }
+  });
 })();`;

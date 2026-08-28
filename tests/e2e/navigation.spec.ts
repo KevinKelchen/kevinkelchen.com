@@ -33,3 +33,32 @@ test('internal navigation keeps the shared header while the next page loads', as
   await expect(page).toHaveURL(/\/blog$/);
   await expect(page.getByRole('heading', { name: 'Blog' })).toBeVisible();
 });
+
+test('internal navigation preserves the selected dark theme', async ({
+  page,
+}) => {
+  await page.addInitScript(() => localStorage.setItem('theme', 'dark'));
+  await page.goto('/about');
+
+  await expect
+    .poll(() =>
+      page
+        .locator('html')
+        .evaluate((element) => element.classList.contains('dark')),
+    )
+    .toBe(true);
+  await page.getByRole('link', { name: 'Blog' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Blog' })).toBeVisible();
+  await expect
+    .poll(() =>
+      page
+        .locator('html')
+        .evaluate((element) => element.classList.contains('dark')),
+    )
+    .toBe(true);
+  const backgroundColor = await page
+    .locator('body')
+    .evaluate((element) => getComputedStyle(element).backgroundColor);
+  expect(backgroundColor).not.toBe('rgb(255, 255, 255)');
+});

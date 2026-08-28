@@ -15,7 +15,13 @@ test('uses the system color scheme until the visitor chooses a theme', async ({
   await page.emulateMedia({ colorScheme: 'dark' });
   await page.goto('/');
 
-  await expect(page.locator('html')).toHaveClass(/dark/);
+  await expect
+    .poll(() =>
+      page
+        .locator('html')
+        .evaluate((element) => element.classList.contains('dark')),
+    )
+    .toBe(true);
   await expect(
     page.getByRole('button', { name: 'Switch to light mode' }),
   ).toBeVisible();
@@ -30,13 +36,25 @@ test('toggles and persists the chosen theme across navigation', async ({
   await expect(toggle).toHaveAccessibleName('Switch to dark mode');
   await toggle.click();
 
-  await expect(page.locator('html')).toHaveClass(/dark/);
+  await expect
+    .poll(() =>
+      page
+        .locator('html')
+        .evaluate((element) => element.classList.contains('dark')),
+    )
+    .toBe(true);
   await expect(toggle).toHaveAccessibleName('Switch to light mode');
   await expect.poll(() => page.evaluate(() => localStorage.theme)).toBe('dark');
 
   await page.goto('/about');
 
-  await expect(page.locator('html')).toHaveClass(/dark/);
+  await expect
+    .poll(() =>
+      page
+        .locator('html')
+        .evaluate((element) => element.classList.contains('dark')),
+    )
+    .toBe(true);
   await expect(
     page.getByRole('button', { name: 'Switch to light mode' }),
   ).toBeVisible();
@@ -74,7 +92,13 @@ test('theme toggle is keyboard operable with a visible focus indicator', async (
   ).not.toBe('0px');
 
   await page.keyboard.press('Enter');
-  await expect(page.locator('html')).toHaveClass(/dark/);
+  await expect
+    .poll(() =>
+      page
+        .locator('html')
+        .evaluate((element) => element.classList.contains('dark')),
+    )
+    .toBe(true);
 });
 
 for (const sitePage of pages) {
