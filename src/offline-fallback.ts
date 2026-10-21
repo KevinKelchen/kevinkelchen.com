@@ -1,11 +1,12 @@
 import { FOOTER_LINKS, HEADER_LINKS, SITE_TITLE } from './consts';
 import { THEME_INIT_SCRIPT } from './lib/theme-init';
+import { CHECK_ICON, DEFAULT_THEME, THEME_OPTIONS } from './lib/theme-options';
 
 // Keep the fallback self-contained: the site's hashed CSS may not be cached
 // when the service worker serves this page. Both the HTML route and the
 // worker's emergency response are generated from this one source.
 export const renderOfflineFallback = () => `<!doctype html>
-<html lang="en">
+<html lang="en" data-theme="${DEFAULT_THEME}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
@@ -141,7 +142,11 @@ export const renderOfflineFallback = () => `<!doctype html>
         color: var(--text);
       }
 
-      .theme-toggle {
+      .theme-control {
+        position: relative;
+      }
+
+      .theme-menu-button {
         flex: none;
         width: 44px;
         height: 44px;
@@ -154,23 +159,79 @@ export const renderOfflineFallback = () => `<!doctype html>
         background: transparent;
       }
 
-      .theme-toggle:hover {
+      .theme-menu-button:hover {
         color: var(--text);
         background: color-mix(in srgb, var(--text) 8%, transparent);
       }
 
-      .theme-toggle svg {
+      .theme-menu-button svg {
         width: 1.25rem;
         height: 1.25rem;
       }
 
-      .sun-icon,
-      .dark .moon-icon {
+      [data-theme-icon] {
         display: none;
       }
 
-      .dark .sun-icon {
+      html[data-theme="system"] [data-theme-icon="system"],
+      html[data-theme="light"] [data-theme-icon="light"],
+      html[data-theme="dark"] [data-theme-icon="dark"] {
         display: block;
+      }
+
+      .theme-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        z-index: 10;
+        margin-top: 0.5rem;
+        min-width: 9rem;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 0.375rem;
+        background: var(--background);
+        padding: 0.25rem 0;
+        font-size: 0.875rem;
+        box-shadow:
+          0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1);
+      }
+
+      .theme-menu-item {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        gap: 0.5rem;
+        border: 0;
+        background: transparent;
+        min-height: 44px;
+        padding: 0 0.75rem;
+        text-align: left;
+        color: var(--secondary-text);
+      }
+
+      .theme-menu-item:hover,
+      .theme-menu-item:focus-visible {
+        color: var(--text);
+        background: color-mix(in srgb, var(--text) 8%, transparent);
+      }
+
+      .theme-menu-item:focus-visible {
+        outline-offset: -2px;
+      }
+
+      .theme-menu-item svg {
+        width: 1rem;
+        height: 1rem;
+        flex: none;
+      }
+
+      .theme-menu-item svg[data-theme-check] {
+        margin-left: auto;
+      }
+
+      .theme-menu-item svg[data-theme-check][hidden] {
+        display: none;
       }
 
       .offline-message {
@@ -215,22 +276,36 @@ export const renderOfflineFallback = () => `<!doctype html>
       }
     </style>
     <script>${THEME_INIT_SCRIPT}</script>
-    <script src="/theme-toggle.js" defer></script>
+    <script src="/theme-menu.js" defer></script>
   </head>
   <body>
     <header>
       <a href="/" class="site-title">${SITE_TITLE}</a>
       <nav aria-label="Primary navigation">
         ${HEADER_LINKS.map((link) => `<a href="${link.href}">${link.label}</a>`).join('\n        ')}
-        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark mode">
-          <svg class="moon-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path>
-          </svg>
-          <svg class="sun-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="4"></circle>
-            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>
-          </svg>
-        </button>
+        <div class="theme-control">
+          <button
+            id="theme-menu-button"
+            class="theme-menu-button"
+            type="button"
+            aria-haspopup="menu"
+            aria-expanded="false"
+            aria-controls="theme-menu"
+            aria-label="Theme: System"
+          >
+            ${THEME_OPTIONS.map((option) => `<svg data-theme-icon="${option.value}" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${option.icon}</svg>`).join('\n            ')}
+          </button>
+          <div id="theme-menu" class="theme-menu" role="menu" aria-label="Theme" hidden>
+            ${THEME_OPTIONS.map(
+              (option) =>
+                `<button type="button" role="menuitemradio" data-theme-option="${option.value}" aria-checked="${option.value === DEFAULT_THEME}" class="theme-menu-item">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${option.icon}</svg>
+              <span>${option.label}</span>
+              <svg data-theme-check${option.value === DEFAULT_THEME ? '' : ' hidden'} aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${CHECK_ICON}</svg>
+            </button>`,
+            ).join('\n            ')}
+          </div>
+        </div>
       </nav>
     </header>
     <main data-offline-fallback>

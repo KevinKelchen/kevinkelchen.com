@@ -8,6 +8,7 @@ import {
   FOOTER_LINKS,
 } from '../consts';
 import { THEME_INIT_SCRIPT } from '../lib/theme-init';
+import { CHECK_ICON, DEFAULT_THEME, THEME_OPTIONS } from '../lib/theme-options';
 
 interface Props {
   title?: string;
@@ -19,7 +20,11 @@ const pageTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
-<html lang="en" class="scheme-light dark:scheme-dark">
+<html
+  lang="en"
+  data-theme={DEFAULT_THEME}
+  class="scheme-light dark:scheme-dark"
+>
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -66,36 +71,73 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
             </a>
           ))
         }
-        <button
-          id="theme-toggle"
-          type="button"
-          class="inline-flex size-11 shrink-0 items-center justify-center rounded-md hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100 dark:focus-visible:outline-gray-100"
-          aria-label="Switch to dark mode"
-        >
-          <svg
-            class="size-5 dark:hidden"
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
+        <div class="relative">
+          <button
+            id="theme-menu-button"
+            type="button"
+            aria-haspopup="menu"
+            aria-expanded="false"
+            aria-controls="theme-menu"
+            aria-label="Theme: System"
+            class="inline-flex size-11 shrink-0 items-center justify-center rounded-md hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100 dark:focus-visible:outline-gray-100"
           >
-            <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path>
-          </svg>
-          <svg
-            class="hidden size-5 dark:block"
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
+            {
+              THEME_OPTIONS.map((option) => (
+                <svg
+                  data-theme-icon={option.value}
+                  class="size-5"
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  set:html={option.icon}
+                />
+              ))
+            }
+          </button>
+          <div
+            id="theme-menu"
+            role="menu"
+            aria-label="Theme"
+            hidden
+            class="absolute top-full right-0 z-10 mt-2 min-w-36 overflow-hidden rounded-md border border-gray-200 bg-white py-1 text-sm shadow-lg dark:border-gray-800 dark:bg-gray-900"
           >
-            <circle cx="12" cy="12" r="4"></circle>
-            <path
-              d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"
-            ></path>
-          </svg>
-        </button>
+            {
+              THEME_OPTIONS.map((option) => (
+                <button
+                  type="button"
+                  role="menuitemradio"
+                  data-theme-option={option.value}
+                  aria-checked={String(option.value === DEFAULT_THEME)}
+                  class="flex min-h-11 w-full items-center gap-2 px-3 text-left text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus-visible:bg-gray-100 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100 dark:focus-visible:bg-gray-800 dark:focus-visible:outline-gray-100"
+                >
+                  <svg
+                    class="size-4 shrink-0"
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    set:html={option.icon}
+                  />
+                  <span>{option.label}</span>
+                  <svg
+                    data-theme-check
+                    hidden={option.value !== DEFAULT_THEME}
+                    class="ml-auto size-4 shrink-0"
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    set:html={CHECK_ICON}
+                  />
+                </button>
+              ))
+            }
+          </div>
+        </div>
       </nav>
     </header>
     <main class="flex-1 pb-16">
@@ -124,6 +166,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       src="/offline-reading.js"
       data-offline-reading={import.meta.env.PROD ? 'enabled' : 'disabled'}
       defer></script>
-    <script is:inline src="/theme-toggle.js" data-astro-rerun defer></script>
+    <script is:inline src="/theme-menu.js" data-astro-rerun defer></script>
   </body>
 </html>

@@ -69,9 +69,10 @@ test('the theme toggle keeps working after internal navigation', async ({
   await page.goto('/about');
   await page.getByRole('link', { name: 'Blog' }).click();
 
-  const toggle = page.locator('#theme-toggle');
-  await expect(toggle).toHaveAccessibleName('Switch to dark mode');
-  await toggle.click();
+  const button = page.locator('#theme-menu-button');
+  await expect(button).toHaveAccessibleName('Theme: System');
+  await button.click();
+  await page.getByRole('menuitemradio', { name: 'Dark' }).click();
 
   await expect
     .poll(() =>
@@ -80,5 +81,5 @@ test('the theme toggle keeps working after internal navigation', async ({
         .evaluate((element) => element.classList.contains('dark')),
     )
     .toBe(true);
-  await expect(toggle).toHaveAccessibleName('Switch to light mode');
+  await expect(button).toHaveAccessibleName('Theme: Dark');
 });

@@ -28,7 +28,7 @@ test('built pages comply with the production script policy', async () => {
 
   expect(stylesheetIndex).toBeGreaterThanOrEqual(0);
 
-  for (const script of ['/offline-reading.js', '/theme-toggle.js']) {
+  for (const script of ['/offline-reading.js', '/theme-menu.js']) {
     expect(homepage.indexOf(`src="${script}"`)).toBeGreaterThan(
       stylesheetIndex,
     );

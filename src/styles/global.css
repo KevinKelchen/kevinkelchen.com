@@ -13,4 +13,14 @@
   summary {
     cursor: pointer;
   }
+
+  [data-theme-icon] {
+    display: none;
+  }
+
+  html[data-theme='system'] [data-theme-icon='system'],
+  html[data-theme='light'] [data-theme-icon='light'],
+  html[data-theme='dark'] [data-theme-icon='dark'] {
+    display: block;
+  }
 }
