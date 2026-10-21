@@ -38,3 +38,25 @@ for (const sitePage of pages) {
     });
   }
 }
+
+for (const path of ['/', '/offline.html']) {
+  for (const colorScheme of ['light', 'dark'] as const) {
+    test(`${path} open theme menu has no automatically detectable WCAG 2.2 AA violations in ${colorScheme} mode`, async ({
+      page,
+    }) => {
+      await page.emulateMedia({ colorScheme });
+      await page.setViewportSize({ width: 320, height: 800 });
+      await page.goto(path, { waitUntil: 'networkidle' });
+
+      await page.locator('#theme-menu-button').click();
+      await expect(page.locator('#theme-menu')).toBeVisible();
+      await page.getByRole('menuitemradio', { name: 'Light' }).hover();
+
+      const results = await new AxeBuilder({ page })
+        .withTags([...wcag22LevelAAndAA])
+        .analyze();
+
+      expect(results.violations).toEqual([]);
+    });
+  }
+}
